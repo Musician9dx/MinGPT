@@ -2,6 +2,8 @@ import tensorflow as tf
 from tensorflow.keras.layers import Dense, Permute, Multiply, LayerNormalization, Embedding, Layer, Add
 from tensorflow.keras.activations import softmax, relu
 from tensorflow.keras import Model
+self.pEmbedding=PositionEmbedding(vocabSize,embedSize)
+
 
 tf.random.set_seed(1337)
 
@@ -73,6 +75,7 @@ class BigramLanguageModel(Model):
         self.self_attention3 = AttentionBlock(embed_size)
         self.self_attention4 = AttentionBlock(embed_size)
         self.mha = MultiHeadAttention(4, embed_size)
+        self.pEmbedding=PositionEmbedding(vocab_size,embed_size)
 
         self.dense1 = Dense(embed_size, activation="linear")
         self.dense2 = Dense(embed_size, activation="linear")
@@ -81,6 +84,8 @@ class BigramLanguageModel(Model):
 
     def call(self, idx, targets=None):
         logits = self.token_embedding_table(idx)
+        logits=logits+seld.pEmbedding(logits)
+        
         lg1 = logits
         logits = self.mha(logits)
         logits = self.adc([relu(logits), lg1])
